@@ -11,41 +11,33 @@ function field(name) {
     return document.querySelector('input[name="' + name + '"]');
 }
 
-function showError(item, message) {
-    const err = document.getElementById(item.prefix + "-error");
-    err.textContent = message;
-    field(item.prefix + "-quantity").classList.toggle("invalid", message !== "");
-}
-
-// returns the line subtotal, or 0 (with an error shown) if the line is invalid
-function getSubtotal(item) {
+// returns the line subtotal, or 0 if the line is invalid
+// alerts the problem only for the item the user just changed
+function getSubtotal(item, changedItem) {
     'use strict';
     const raw = field(item.prefix + "-quantity").value.trim();
     const checked = document.querySelector('input[name="' + item.prefix + '-price"]:checked');
     const price = item.fixedPrice ?? (checked ? Number(checked.value) : null);
 
-    if (!/^\d*$/.test(raw)) {
-        showError(item, "Quantity must be a whole number (0 or more).");
-        return 0;
-    }
     const quantity = Number(raw);
-    if (quantity > MAX_QUANTITY) {
-        showError(item, "Maximum " + MAX_QUANTITY + " per item.");
+    let message = "";
+
+    if (!/^\d*$/.test(raw)) message = "Quantity must be a whole number (0 or more).";
+    else if (quantity > MAX_QUANTITY) message = "Maximum " + MAX_QUANTITY + " per item.";
+    else if (quantity > 0 && price === null) message = "Please choose Single or Double for " + item.name + ".";
+
+    if (message !== "") {
+        if (item === changedItem) alert(message);
         return 0;
     }
-    if (quantity > 0 && price === null) {
-        showError(item, "Please choose Single or Double for " + item.name + ".");
-        return 0;
-    }
-    showError(item, "");
     return price === null ? 0 : price * quantity;
 }
 
-function updateMenu() {
+function updateMenu(changedItem) {
     'use strict';
     let total = 0;
     ITEMS.forEach(function (item) {
-        const subtotal = getSubtotal(item);
+        const subtotal = getSubtotal(item, changedItem);
         field(item.prefix + "-subtotal").value = subtotal.toFixed(2);
         total += subtotal;
     });
@@ -55,7 +47,9 @@ function updateMenu() {
 ITEMS.forEach(function (item) {
     document.querySelectorAll('input[name="' + item.prefix + '-quantity"], input[name="' + item.prefix + '-price"]')
         .forEach(function (input) {
-            input.addEventListener("input", updateMenu);
+            input.addEventListener("input", function () {
+                updateMenu(item);
+            });
         });
 });
 updateMenu();

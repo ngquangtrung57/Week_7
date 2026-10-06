@@ -250,16 +250,3 @@ table.music-table audio {
 #job-form button:hover {
     background: #ddc9a3;
 }
-/* form validation */
-.error {
-    display: block;
-    color: #b00020;
-    font-size: 0.85em;
-    min-height: 1em;
-}
-#job-form .error {
-    margin-left: 120px;
-}
-input.invalid, textarea.invalid {
-    border: 2px solid #b00020;
-}

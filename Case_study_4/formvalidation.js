@@ -23,79 +23,63 @@ function addDays(days) {
 
 const EXPERIENCE_MIN = 20;
 
-function setError(input, message) {
-    const err = document.getElementById(input.id + "-error");
-    err.textContent = message;
-    input.classList.toggle("invalid", message !== "");
-    return message === "";
+// each validator returns an error message, or "" if the value is fine
+function validateName(value) {
+    const v = value.trim();
+    if (v === "") return "Name is required.";
+    if (!onlyLettersAndSpace(v)) return "Name can only contain letters and spaces.";
+    if (v.length < 2) return "Name must be at least 2 letters.";
+    return "";
 }
 
-function validateName(input) {
-    const v = input.value.trim();
-    if (v === "") return setError(input, "Name is required.");
-    if (!onlyLettersAndSpace(v)) return setError(input, "Name can only contain letters and spaces.");
-    if (v.length < 2) return setError(input, "Name must be at least 2 letters.");
-    return setError(input, "");
+function validateEmail(value) {
+    const v = value.trim();
+    if (v === "") return "E-mail is required.";
+    if (!isValidEmail(v)) return "E-mail format is incorrect (e.g. jane.doe@example.com).";
+    return "";
 }
 
-function validateEmail(input) {
-    const v = input.value.trim();
-    if (v === "") return setError(input, "E-mail is required.");
-    if (!isValidEmail(v)) return setError(input, "E-mail format is incorrect (e.g. jane.doe@example.com).");
-    return setError(input, "");
-}
-
-function validateStartDate(input) {
+function validateStartDate(value) {
     // optional field
-    if (input.value === "") return setError(input, "");
+    if (value === "") return "";
     // YYYY-MM-DD strings compare correctly as text
-    if (input.value < addDays(1)) return setError(input, "Start date must be after today.");
-    if (input.value > addDays(365)) return setError(input, "Start date must be within the next 12 months.");
-    return setError(input, "");
+    if (value < addDays(1)) return "Start date must be after today.";
+    if (value > addDays(365)) return "Start date must be within the next 12 months.";
+    return "";
 }
 
-function validateExperience(input) {
-    const v = input.value.trim();
-    if (v === "") return setError(input, "Please tell us about your experience.");
-    if (v.length < EXPERIENCE_MIN) return setError(input, "Please write at least " + EXPERIENCE_MIN + " characters.");
-    return setError(input, "");
+function validateExperience(value) {
+    const v = value.trim();
+    if (v === "") return "Please tell us about your experience.";
+    if (v.length < EXPERIENCE_MIN) return "Please write at least " + EXPERIENCE_MIN + " characters.";
+    return "";
 }
 
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("job-form");
-    const name = document.getElementById("name");
-    const email = document.getElementById("email");
     const startdate = document.getElementById("startdate");
-    const experience = document.getElementById("experience");
 
     startdate.min = addDays(1);
     startdate.max = addDays(365);
 
     const checks = [
-        [name, validateName],
-        [email, validateEmail],
-        [startdate, validateStartDate],
-        [experience, validateExperience],
+        ["name", validateName],
+        ["email", validateEmail],
+        ["startdate", validateStartDate],
+        ["experience", validateExperience],
     ];
 
-    // live feedback once the user leaves a field, and again as they fix it
-    checks.forEach(function ([input, check]) {
-        input.addEventListener("blur", () => check(input));
-        input.addEventListener("input", () => {
-            if (input.classList.contains("invalid")) check(input);
-        });
-    });
-
     form.addEventListener("submit", function (e) {
-        // run every check so all errors show at once
-        const results = checks.map(([input, check]) => check(input));
-        if (results.includes(false)) {
-            e.preventDefault();
-            checks.find(([input]) => input.classList.contains("invalid"))[0].focus();
+        // alert the first problem found and stop the submission
+        for (const [id, check] of checks) {
+            const input = document.getElementById(id);
+            const message = check(input.value);
+            if (message !== "") {
+                e.preventDefault();
+                alert(message);
+                input.focus();
+                return;
+            }
         }
-    });
-
-    form.addEventListener("reset", function () {
-        checks.forEach(([input]) => setError(input, ""));
     });
 });
