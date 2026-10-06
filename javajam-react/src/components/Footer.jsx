@@ -1,18 +1,11 @@
 function Footer(){
     return (
-        <footer className="bg-[#c19a6b] text-center py-2 text-[0.85em] text-[#2b1c10]">
-            <small>
-                <i>
-                    Copyright &copy; 2014 JavaJam Coffee House
-                    <br />
-                    <a
-                        href="mailto:trung@nguyen.com"
-                        className="text-[#2b1c10]"
-                    >
-                        trung@nguyen.com
-                    </a>
-                </i>
-            </small>
+        <footer className="bg-roast-400 py-3 text-center text-sm italic text-roast-900">
+            Copyright &copy; 2014 JavaJam Coffee House
+            <br />
+            <a href="mailto:trung@nguyen.com" className="text-roast-900 underline hover:text-roast-700">
+                trung@nguyen.com
+            </a>
         </footer>
     );
 }

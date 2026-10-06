@@ -1,70 +1,61 @@
-function getTotalPrice(){
+const MAX_QUANTITY = 99;
+
+// prefix matches the input names, e.g. "java-quantity", "cafe-price"
+const ITEMS = [
+    {prefix: "java", name: "Just Java", fixedPrice: 2.0},
+    {prefix: "cafe", name: "Cafe au Lait"},
+    {prefix: "cappuccino", name: "Iced Cappuccino"}
+];
+
+function field(name) {
+    return document.querySelector('input[name="' + name + '"]');
+}
+
+function showError(item, message) {
+    const err = document.getElementById(item.prefix + "-error");
+    err.textContent = message;
+    field(item.prefix + "-quantity").classList.toggle("invalid", message !== "");
+}
+
+// returns the line subtotal, or 0 (with an error shown) if the line is invalid
+function getSubtotal(item) {
     'use strict';
-    const justJavaSubtotal = Number(document.querySelector('input[name="java-subtotal"]').value) || 0.0;
-    const cafeAuLaitSubtotal = Number(document.querySelector('input[name="cafe-subtotal"]').value) || 0.0;
-    const icedCappuccinoSubtotal = Number(document.querySelector('input[name="cappuccino-subtotal"]').value) || 0.0;
-    
-    var sum = justJavaSubtotal + cafeAuLaitSubtotal + icedCappuccinoSubtotal;
-    document.querySelector('input[name="total-price"]').value = sum;
-}
+    const raw = field(item.prefix + "-quantity").value.trim();
+    const checked = document.querySelector('input[name="' + item.prefix + '-price"]:checked');
+    const price = item.fixedPrice ?? (checked ? Number(checked.value) : null);
 
-function getJustJavaSubtotal(){
-    const justJavaPrice = 2.0;
-    const justJavaQuantity = Number(document.querySelector('input[name="java-quantity"]').value);
-    console.log(justJavaQuantity);
-    if(justJavaQuantity < 0){
-        alert("Quantity cannot be negative number!");
-    }else if(!Number.isInteger(justJavaQuantity)){
-        alert("Quantity must be an integer!");
-    }else{
-        const subtotal = justJavaPrice * justJavaQuantity;
-        document.querySelector('input[name="java-subtotal"]').value = subtotal;
-        getTotalPrice();
+    if (!/^\d*$/.test(raw)) {
+        showError(item, "Quantity must be a whole number (0 or more).");
+        return 0;
     }
-}
-
-function getCafeAuLaitSubtotal(){
-    const cafeAuLaitPrice = document.querySelector('#cafe-form input[name="cafe-price"]:checked');
-    const cafeAuLaitQuantity = Number(document.querySelector('input[name="cafe-quantity"]').value) || 0;
-    
-    if(cafeAuLaitQuantity !== 0 && !cafeAuLaitPrice) {
-        alert("Please choose Single shot or Double shot for Cafe Au Lait!");
-    }else if(cafeAuLaitPrice){
-        if(cafeAuLaitQuantity < 0){
-            alert("Quantity cannot be negative number!");
-        }else if(!Number.isInteger(cafeAuLaitQuantity)){
-            alert("Quantity must be an integer!");
-        }else{
-            const subtotal = Number(cafeAuLaitPrice.value) * cafeAuLaitQuantity;
-            document.querySelector('input[name="cafe-subtotal"]').value = subtotal;
-            getTotalPrice();
-        }
+    const quantity = Number(raw);
+    if (quantity > MAX_QUANTITY) {
+        showError(item, "Maximum " + MAX_QUANTITY + " per item.");
+        return 0;
     }
-}
-
-function getIcedCappuccinoSubtotal(){
-    const icedCappuccinoPrice = document.querySelector('#cappuccino-form input[name="cappuccino-price"]:checked');
-    const icedCappuccinoQuantity = Number(document.querySelector('input[name="cappuccino-quantity"]').value) || 0;
-    
-    if(icedCappuccinoQuantity !== 0 && !icedCappuccinoPrice) {
-        alert("Please choose Single shot or Double shot for Iced Cappuccino!");
-    }else if(icedCappuccinoPrice){
-        if(icedCappuccinoQuantity < 0){
-            alert("Quantity cannot be negative number!");
-        }else if(!Number.isInteger(icedCappuccinoQuantity)){
-            alert("Quantity must be an integer!");
-        }else{
-            const subtotal = Number(icedCappuccinoPrice.value) * icedCappuccinoQuantity;
-            document.querySelector('input[name="cappuccino-subtotal"]').value = subtotal;
-            getTotalPrice();
-        }
+    if (quantity > 0 && price === null) {
+        showError(item, "Please choose Single or Double for " + item.name + ".");
+        return 0;
     }
+    showError(item, "");
+    return price === null ? 0 : price * quantity;
 }
 
-document.querySelector('input[name="java-quantity"]').addEventListener("input", getJustJavaSubtotal);
-document.querySelectorAll('#cafe-form input[name="cafe-price"], input[name="cafe-quantity"]').forEach(input => {
-    input.addEventListener('input', getCafeAuLaitSubtotal);
+function updateMenu() {
+    'use strict';
+    let total = 0;
+    ITEMS.forEach(function (item) {
+        const subtotal = getSubtotal(item);
+        field(item.prefix + "-subtotal").value = subtotal.toFixed(2);
+        total += subtotal;
+    });
+    field("total-price").value = total.toFixed(2);
+}
+
+ITEMS.forEach(function (item) {
+    document.querySelectorAll('input[name="' + item.prefix + '-quantity"], input[name="' + item.prefix + '-price"]')
+        .forEach(function (input) {
+            input.addEventListener("input", updateMenu);
+        });
 });
-document.querySelectorAll('#cappuccino-form input[name="cappuccino-price"], input[name="cappuccino-quantity"]').forEach(input => {
-    input.addEventListener('input', getIcedCappuccinoSubtotal);
-});
+updateMenu();

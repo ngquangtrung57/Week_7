@@ -4,7 +4,7 @@
     <title>JavaJam Coffee House - Jobs</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="style.css">
-    <script type="text/javascript" src="formvalidation.js"></script>
+    <script type="text/javascript" src="formvalidation.js" defer></script>
 </head>
 <body>
 <div class="page">
@@ -22,25 +22,29 @@
         <h2>Jobs at JavaJam</h2>
         <p>Want to work at JavaJam? Fill out the form below to start your application. Required fields are
             marked with an asterisk *</p>
-        <form id="job-form" action="show_post.php" method="post">
+        <form id="job-form" action="show_post.php" method="post" novalidate>
             <div class="form-row">
                 <label for="name">*Name:</label>
                 <input type="text" id="name" name="name" placeholder="Enter your name here" required>
+                <span class="error" id="name-error" aria-live="polite"></span>
             </div>
 
             <div class="form-row">
                 <label for="email">*E-mail:</label>
                 <input type="email" id="email" name="email" placeholder="Enter your Email-ID here" required>
+                <span class="error" id="email-error" aria-live="polite"></span>
             </div>
 
             <div class="form-row">
                 <label for="startdate">Start Date:</label>
                 <input type="date" id="startdate" name="startdate">
+                <span class="error" id="startdate-error" aria-live="polite"></span>
             </div>
 
             <div class="form-row">
                 <label for="experience">*Experience:</label>
-                <textarea id="experience" name="experience" placeholder="Enter your past experience here" required></textarea>
+                <textarea id="experience" name="experience" placeholder="Enter your past experience here (at least 20 characters)" maxlength="500" required></textarea>
+                <span class="error" id="experience-error" aria-live="polite"></span>
             </div>
 
             <div class="buttons">

@@ -25,7 +25,7 @@
                 <td>Regular house blend, decaffeinated coffee, or flavor of the day.<br>
                     <strong>Endless Cup $2.00</strong></td>
                 <td>Quantity: <input type="text" class="quantity" name="java-quantity" value="0"></td>
-                <td>Subtotal: <input type="text" class="subtotal" name="java-subtotal" readonly></td>
+                <td>Subtotal: <input type="text" class="subtotal" name="java-subtotal" readonly><span class="error" id="java-error" aria-live="polite"></span></td>
             </tr>
             <tr>
                 <th>Cafe au Lait</th>
@@ -36,18 +36,18 @@
                     </form>
                 </td>
                 <td>Quantity: <input type="text" class="quantity" name="cafe-quantity" value="0"></td>
-                <td>Subtotal: <input type="text" class="subtotal" name="cafe-subtotal" readonly></td>
+                <td>Subtotal: <input type="text" class="subtotal" name="cafe-subtotal" readonly><span class="error" id="cafe-error" aria-live="polite"></span></td>
             </tr>
             <tr>
                 <th>Iced Cappuccino</th>
                 <td>Sweetened espresso blended with icy-cold milk and served in a chilled glass.<br>
                     <form id="cappuccino-form">
                         <input type="radio" name="cappuccino-price" value="4.75">Single $4.75<br>
-                        <input type="radio" name="cappuccino-price" class="subtotal" value="5.75">Double $5.75<br>
+                        <input type="radio" name="cappuccino-price" value="5.75">Double $5.75<br>
                     </form>
                 </td>
                 <td>Quantity: <input type="text" class="quantity" name="cappuccino-quantity" value="0"></td>
-                <td>Subtotal: <input type="text" class="subtotal" name="cappuccino-subtotal" readonly></td>
+                <td>Subtotal: <input type="text" class="subtotal" name="cappuccino-subtotal" readonly><span class="error" id="cappuccino-error" aria-live="polite"></span></td>
             </tr>
             <tr>
                 <th></th>

@@ -1,4 +1,4 @@
-import {BrowserRouter, Routes, Route} from "react-router-dom";
+import {BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
 import Home from "./pages/Home";
 import Menu from "./pages/Menu";
 import Jobs from "./pages/Jobs";
@@ -13,6 +13,7 @@ function App(){
         <Route path="/jobs" element={<Jobs />} />
         <Route path="/music" element={<Music />} />
         <Route path="/application-received" element={<ApplicationReceived />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );

@@ -1,25 +1,30 @@
-function Navigation({activePage}){
-    const links = [
-        {name: "Home", path: "/"},
-        {name: "Menu", path: "/menu"},
-        {name: "Music", path: "/music"},
-        {name: "Jobs", path: "/jobs"}
-    ];
+import {NavLink} from "react-router-dom";
 
+const links = [
+    {name: "Home", path: "/"},
+    {name: "Menu", path: "/menu"},
+    {name: "Music", path: "/music"},
+    {name: "Jobs", path: "/jobs"}
+];
+
+function Navigation(){
     return (
-        <nav className="float-left w-[160px] bg-[#ddc9a3] px-[15px] py-5">
+        <nav className="flex gap-1 overflow-x-auto bg-roast-300 px-3 py-2 md:flex-col md:px-3 md:py-5">
             {links.map(link => (
-                <a
+                <NavLink
                     key={link.name}
-                    href={link.path}
-                    className={`block font-bold no-underline mb-[10px] ${
-                        activePage === link.name
-                            ? "text-[#3a2a1a]"
-                            : "text-[#8a7860] hover:text-[#3a2a1a]"
-                    }`}
+                    to={link.path}
+                    end={link.path === "/"}
+                    className={({isActive}) =>
+                        `rounded-md px-3 py-2 font-bold no-underline transition-colors ${
+                            isActive
+                                ? "bg-roast-100 text-roast-900 shadow-sm"
+                                : "text-roast-600 hover:bg-roast-200 hover:text-roast-900"
+                        }`
+                    }
                 >
                     {link.name}
-                </a>
+                </NavLink>
             ))}
         </nav>
     );

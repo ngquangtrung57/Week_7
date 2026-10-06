@@ -23,19 +23,19 @@
         <table class="menu-table">
             <tr>
                 <th>Name</th>
-                <td><?php echo $_POST['name']; ?></td>
+                <td><?php echo htmlspecialchars($_POST['name'] ?? ''); ?></td>
             </tr>
             <tr>
                 <th>E-mail</th>
-                <td><?php echo $_POST['email']; ?></td>
+                <td><?php echo htmlspecialchars($_POST['email'] ?? ''); ?></td>
             </tr>
             <tr>
                 <th>Start Date</th>
-                <td><?php echo $_POST['startdate']; ?></td>
+                <td><?php echo htmlspecialchars($_POST['startdate'] ?? ''); ?></td>
             </tr>
             <tr>
                 <th>Experience</th>
-                <td><?php echo $_POST['experience']; ?></td>
+                <td><?php echo htmlspecialchars($_POST['experience'] ?? ''); ?></td>
             </tr>
         </table>
     </main>

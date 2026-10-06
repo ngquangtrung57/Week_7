@@ -1,8 +1,10 @@
+import {Link} from "react-router-dom";
+
 function Header(){
     return (
-        <header className="bg-[#c19a6b] text-center py-[10px]">
-            <h1 className="m-0 font-['Pirata_One'] text-[3.4em] text-[#2b1c10]">
-                JavaJam Coffee House
+        <header className="bg-roast-400 py-4 text-center">
+            <h1 className="m-0 font-display text-4xl text-roast-900 sm:text-5xl">
+                <Link to="/" className="no-underline">JavaJam Coffee House</Link>
             </h1>
         </header>
     );

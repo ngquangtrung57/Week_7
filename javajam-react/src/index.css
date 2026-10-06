@@ -1,13 +1,25 @@
 @import url('https://fonts.googleapis.com/css2?family=Pirata+One&display=swap');
 @import "tailwindcss";
 
-* {
-    box-sizing: border-box;
+@theme {
+    --font-display: "Pirata One", Georgia, serif;
+    --font-serif: Georgia, "Times New Roman", serif;
+
+    --color-roast-50: #fdfbf5;
+    --color-roast-100: #faf7ec;
+    --color-roast-200: #f5ecd6;
+    --color-roast-300: #ddc9a3;
+    --color-roast-400: #c19a6b;
+    --color-roast-500: #b8944f;
+    --color-roast-600: #8a6a45;
+    --color-roast-700: #5c4329;
+    --color-roast-800: #3a2a1a;
+    --color-roast-900: #2b1c10;
 }
 
 body {
     margin: 0;
-    font-family: Georgia, "Times New Roman", serif;
-    background: #ffffff;
-    color: #3a2a1a;
+    font-family: var(--font-serif);
+    background: var(--color-roast-200);
+    color: var(--color-roast-800);
 }

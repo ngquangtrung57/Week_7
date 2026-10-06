@@ -1,241 +1,225 @@
 import {useEffect, useState} from "react";
 import Layout from "../components/Layout";
 
+const MAX_QUANTITY = 99;
+
+const MENU = [
+    {
+        id: "java",
+        name: "Just Java",
+        description: "Regular house blend, decaffeinated coffee, or flavor of the day.",
+        options: [{label: "Endless Cup", price: 2.0}]
+    },
+    {
+        id: "cafe",
+        name: "Cafe au Lait",
+        description: "House blended coffee infused into a smooth, steamed milk.",
+        options: [{label: "Single", price: 2.0}, {label: "Double", price: 3.0}]
+    },
+    {
+        id: "cappuccino",
+        name: "Iced Cappuccino",
+        description: "Sweetened espresso blended with icy-cold milk and served in a chilled glass.",
+        options: [{label: "Single", price: 4.75}, {label: "Double", price: 5.75}]
+    }
+];
+
+// items with a single price need no size choice
+const INITIAL_ORDER = Object.fromEntries(
+    MENU.map(item => [item.id, {option: item.options.length === 1 ? 0 : null, quantity: "0"}])
+);
+
+const money = value => `$${value.toFixed(2)}`;
+
+// returns an error message, or "" if the line is valid
+function lineError(item, line){
+    if(!/^\d*$/.test(line.quantity)) return "Quantity must be a whole number (0 or more).";
+    const quantity = Number(line.quantity);
+    if(quantity > MAX_QUANTITY) return `Maximum ${MAX_QUANTITY} per item.`;
+    if(quantity > 0 && line.option === null) return `Please choose Single or Double for ${item.name}.`;
+    return "";
+}
+
 function Menu(){
-    const [javaQuantity, setJavaQuantity] = useState("0");
-    const [cafeQuantity, setCafeQuantity] = useState("0");
-    const [cappuccinoQuantity, setCappuccinoQuantity] = useState("0");
+    const [order, setOrder] = useState(INITIAL_ORDER);
+    const [subtotals, setSubtotals] = useState({});
 
-    const [cafePrice, setCafePrice] = useState("");
-    const [cappuccinoPrice, setCappuccinoPrice] = useState("");
-
-    const [javaSubtotal, setJavaSubtotal] = useState(0);
-    const [cafeSubtotal, setCafeSubtotal] = useState(0);
-    const [cappuccinoSubtotal, setCappuccinoSubtotal] = useState(0);
-
+    // recompute every subtotal automatically whenever a size or quantity changes
     useEffect(() => {
-        const quantity = Number(javaQuantity);
+        setSubtotals(Object.fromEntries(MENU.map(item => {
+            const line = order[item.id];
+            if(lineError(item, line) || line.option === null) return [item.id, 0];
+            return [item.id, item.options[line.option].price * Number(line.quantity || 0)];
+        })));
+    }, [order]);
 
-        if(javaQuantity === "" || (Number.isInteger(quantity) && quantity >= 0)){
-            setJavaSubtotal(2.0 * (quantity || 0));
-        }
-    }, [javaQuantity]);
+    const total = Object.values(subtotals).reduce((sum, value) => sum + value, 0);
+    const itemCount = MENU.reduce((sum, item) =>
+        sum + (subtotals[item.id] ? Number(order[item.id].quantity) : 0), 0);
 
-    useEffect(() => {
-        const quantity = Number(cafeQuantity);
-
-        if(cafePrice && Number.isInteger(quantity) && quantity >= 0){
-            setCafeSubtotal(Number(cafePrice) * quantity);
-        }else if(quantity === 0){
-            setCafeSubtotal(0);
-        }
-    }, [cafePrice, cafeQuantity]);
-
-    useEffect(() => {
-        const quantity = Number(cappuccinoQuantity);
-
-        if(cappuccinoPrice && Number.isInteger(quantity) && quantity >= 0){
-            setCappuccinoSubtotal(Number(cappuccinoPrice) * quantity);
-        }else if(quantity === 0){
-            setCappuccinoSubtotal(0);
-        }
-    }, [cappuccinoPrice, cappuccinoQuantity]);
-
-    const totalPrice = javaSubtotal + cafeSubtotal + cappuccinoSubtotal;
-
-    function isValidQuantity(value){
-        return value === "" || /^\d+$/.test(value);
+    function updateLine(id, changes){
+        setOrder(prev => ({...prev, [id]: {...prev[id], ...changes}}));
     }
 
-    function handleJavaQuantity(event){
-        const value = event.target.value;
-
-        if(!isValidQuantity(value)){
-            alert("Quantity must be a non-negative integer!");
-            return;
-        }
-
-        setJavaQuantity(value);
-    }
-
-    function handleCafeQuantity(event){
-        const value = event.target.value;
-
-        if(!isValidQuantity(value)){
-            alert("Quantity must be a non-negative integer!");
-            return;
-        }
-
-        if(value !== "0" && value !== "" && !cafePrice){
-            alert("Please choose Single shot or Double shot for Cafe Au Lait!");
-        }
-
-        setCafeQuantity(value);
-    }
-
-    function handleCappuccinoQuantity(event){
-        const value = event.target.value;
-
-        if(!isValidQuantity(value)){
-            alert("Quantity must be a non-negative integer!");
-            return;
-        }
-
-        if(value !== "0" && value !== "" && !cappuccinoPrice){
-            alert("Please choose Single shot or Double shot for Iced Cappuccino!");
-        }
-
-        setCappuccinoQuantity(value);
+    function step(id, delta){
+        const current = Number(order[id].quantity) || 0;
+        const next = Math.min(MAX_QUANTITY, Math.max(0, current + delta));
+        updateLine(id, {quantity: String(next)});
     }
 
     return (
-        <Layout activePage="Menu">
-            <h2>Coffee at JavaJam</h2>
+        <Layout title="Coffee at JavaJam">
+            <p className="mb-6 max-w-prose leading-relaxed">
+                Choose a size and quantity. Your subtotal and total update as you go.
+            </p>
 
-            <table className="w-[60%] mx-auto mt-[10px] border-separate border-spacing-x-1 border-spacing-y-0">
-                <tbody>
-                    <tr>
-                        <th className="w-[150px] bg-[#c19a6b] p-3 text-center text-[#2b1c10]">
-                            Just Java
-                        </th>
-                        <td className="bg-[#c19a6b] p-3">
-                            Regular house blend, decaffeinated coffee, or flavor of the day.
-                            <br />
-                            <strong>Endless Cup $2.00</strong>
-                        </td>
-                        <td className="bg-[#c19a6b] p-3">
-                            Quantity:{" "}
-                            <input
-                                type="text"
-                                value={javaQuantity}
-                                onChange={handleJavaQuantity}
-                                className="w-[50px]"
-                            />
-                        </td>
-                        <td className="bg-[#c19a6b] p-3">
-                            Subtotal:{" "}
-                            <input
-                                type="text"
-                                value={javaSubtotal.toFixed(2)}
-                                readOnly
-                                className="w-[50px]"
-                            />
-                        </td>
-                    </tr>
+            <div className="grid gap-6 lg:grid-cols-[1fr_260px] lg:items-start">
+                <ul className="m-0 list-none space-y-4 p-0">
+                    {MENU.map(item => {
+                        const line = order[item.id];
+                        const error = lineError(item, line);
+                        const subtotal = subtotals[item.id] || 0;
 
-                    <tr>
-                        <th className="w-[150px] bg-[#f5ecd6] p-3 text-center text-[#2b1c10]">
-                            Cafe au Lait
-                        </th>
-                        <td className="bg-[#f5ecd6] p-3">
-                            House blended coffee infused into a smooth, steamed milk.
-                            <br />
-                            <label>
-                                <input
-                                    type="radio"
-                                    name="cafe-price"
-                                    value="2"
-                                    checked={cafePrice === "2"}
-                                    onChange={event => setCafePrice(event.target.value)}
-                                />
-                                {" "}Single $2.00
-                            </label>
-                            <br />
-                            <label>
-                                <input
-                                    type="radio"
-                                    name="cafe-price"
-                                    value="3"
-                                    checked={cafePrice === "3"}
-                                    onChange={event => setCafePrice(event.target.value)}
-                                />
-                                {" "}Double $3.00
-                            </label>
-                        </td>
-                        <td className="bg-[#f5ecd6] p-3">
-                            Quantity:{" "}
-                            <input
-                                type="text"
-                                value={cafeQuantity}
-                                onChange={handleCafeQuantity}
-                                className="w-[50px]"
-                            />
-                        </td>
-                        <td className="bg-[#f5ecd6] p-3">
-                            Subtotal:{" "}
-                            <input
-                                type="text"
-                                value={cafeSubtotal.toFixed(2)}
-                                readOnly
-                                className="w-[50px]"
-                            />
-                        </td>
-                    </tr>
+                        return (
+                            <li
+                                key={item.id}
+                                className={`rounded-lg border bg-roast-50 p-4 shadow-sm sm:p-5 ${
+                                    error ? "border-red-300" : "border-roast-300"
+                                }`}
+                            >
+                                <div className="flex items-baseline justify-between gap-3">
+                                    <h3 className="m-0 text-lg font-bold text-roast-900">{item.name}</h3>
+                                    <span className="whitespace-nowrap text-sm text-roast-600">
+                                        {item.options.length === 1
+                                            ? money(item.options[0].price)
+                                            : `from ${money(item.options[0].price)}`}
+                                    </span>
+                                </div>
+                                <p className="mt-1 mb-4 text-roast-700">{item.description}</p>
 
-                    <tr>
-                        <th className="w-[150px] bg-[#c19a6b] p-3 text-center text-[#2b1c10]">
-                            Iced Cappuccino
-                        </th>
-                        <td className="bg-[#c19a6b] p-3">
-                            Sweetened espresso blended with icy-cold milk and served in a chilled glass.
-                            <br />
-                            <label>
-                                <input
-                                    type="radio"
-                                    name="cappuccino-price"
-                                    value="4.75"
-                                    checked={cappuccinoPrice === "4.75"}
-                                    onChange={event => setCappuccinoPrice(event.target.value)}
-                                />
-                                {" "}Single $4.75
-                            </label>
-                            <br />
-                            <label>
-                                <input
-                                    type="radio"
-                                    name="cappuccino-price"
-                                    value="5.75"
-                                    checked={cappuccinoPrice === "5.75"}
-                                    onChange={event => setCappuccinoPrice(event.target.value)}
-                                />
-                                {" "}Double $5.75
-                            </label>
-                        </td>
-                        <td className="bg-[#c19a6b] p-3">
-                            Quantity:{" "}
-                            <input
-                                type="text"
-                                value={cappuccinoQuantity}
-                                onChange={handleCappuccinoQuantity}
-                                className="w-[50px]"
-                            />
-                        </td>
-                        <td className="bg-[#c19a6b] p-3">
-                            Subtotal:{" "}
-                            <input
-                                type="text"
-                                value={cappuccinoSubtotal.toFixed(2)}
-                                readOnly
-                                className="w-[50px]"
-                            />
-                        </td>
-                    </tr>
+                                <div className="flex flex-wrap items-end justify-between gap-4">
+                                    <fieldset className="m-0 border-0 p-0">
+                                        <legend className="mb-1 text-xs font-bold tracking-wide text-roast-600 uppercase">
+                                            Size
+                                        </legend>
+                                        <div className="inline-flex overflow-hidden rounded-md border border-roast-400">
+                                            {item.options.map((option, index) => {
+                                                const selected = line.option === index;
+                                                return (
+                                                    <label
+                                                        key={option.label}
+                                                        className={`cursor-pointer px-3 py-1.5 text-sm not-last:border-r not-last:border-roast-400 ${
+                                                            selected
+                                                                ? "bg-roast-700 text-white"
+                                                                : "bg-white text-roast-800 hover:bg-roast-200"
+                                                        }`}
+                                                    >
+                                                        <input
+                                                            type="radio"
+                                                            name={`${item.id}-size`}
+                                                            className="sr-only"
+                                                            checked={selected}
+                                                            onChange={() => updateLine(item.id, {option: index})}
+                                                        />
+                                                        {option.label} {money(option.price)}
+                                                    </label>
+                                                );
+                                            })}
+                                        </div>
+                                    </fieldset>
 
-                    <tr>
-                        <th className="p-3"></th>
-                        <td className="p-3 text-right">
-                            <strong>Total price:</strong>
-                        </td>
-                        <td colSpan="2" className="p-3">
-                            <input
-                                type="text"
-                                value={totalPrice.toFixed(2)}
-                                readOnly
-                            />
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                                    <div className="flex items-end gap-5">
+                                        <div>
+                                            <label
+                                                htmlFor={`${item.id}-quantity`}
+                                                className="mb-1 block text-xs font-bold tracking-wide text-roast-600 uppercase"
+                                            >
+                                                Quantity
+                                            </label>
+                                            <div className="inline-flex overflow-hidden rounded-md border border-roast-400 bg-white">
+                                                <button
+                                                    type="button"
+                                                    aria-label={`Decrease ${item.name}`}
+                                                    onClick={() => step(item.id, -1)}
+                                                    className="w-8 text-lg text-roast-700 hover:bg-roast-200"
+                                                >
+                                                    −
+                                                </button>
+                                                <input
+                                                    id={`${item.id}-quantity`}
+                                                    type="text"
+                                                    inputMode="numeric"
+                                                    value={line.quantity}
+                                                    onChange={event => updateLine(item.id, {quantity: event.target.value.trim()})}
+                                                    className="w-12 border-x border-roast-300 py-1.5 text-center focus:outline-none"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    aria-label={`Increase ${item.name}`}
+                                                    onClick={() => step(item.id, 1)}
+                                                    className="w-8 text-lg text-roast-700 hover:bg-roast-200"
+                                                >
+                                                    +
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div className="min-w-[80px] text-right">
+                                            <div className="mb-1 text-xs font-bold tracking-wide text-roast-600 uppercase">
+                                                Subtotal
+                                            </div>
+                                            <div className="py-1.5 text-lg font-bold text-roast-900 tabular-nums">
+                                                {money(subtotal)}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {error && (
+                                    <p role="alert" className="mt-3 mb-0 text-sm text-red-700">{error}</p>
+                                )}
+                            </li>
+                        );
+                    })}
+                </ul>
+
+                <aside className="rounded-lg border border-roast-300 bg-roast-50 p-5 shadow-sm lg:sticky lg:top-6">
+                    <h3 className="m-0 mb-3 text-lg font-bold text-roast-900">Your Order</h3>
+
+                    {itemCount === 0 ? (
+                        <p className="m-0 text-sm text-roast-600">No items yet.</p>
+                    ) : (
+                        <ul className="m-0 list-none space-y-1 p-0 text-sm">
+                            {MENU.filter(item => subtotals[item.id] > 0).map(item => {
+                                const line = order[item.id];
+                                return (
+                                    <li key={item.id} className="flex justify-between gap-2">
+                                        <span>
+                                            {line.quantity} × {item.name}
+                                            {item.options.length > 1 && ` (${item.options[line.option].label})`}
+                                        </span>
+                                        <span className="tabular-nums">{money(subtotals[item.id])}</span>
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    )}
+
+                    <div className="mt-4 flex items-baseline justify-between border-t border-roast-300 pt-3">
+                        <span className="font-bold">Total price</span>
+                        <span className="text-2xl font-bold text-roast-900 tabular-nums">{money(total)}</span>
+                    </div>
+
+                    <button
+                        type="button"
+                        onClick={() => setOrder(INITIAL_ORDER)}
+                        disabled={itemCount === 0}
+                        className="mt-4 w-full rounded-md border border-roast-400 bg-white px-4 py-2 text-sm font-bold text-roast-700 hover:bg-roast-100 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                        Clear order
+                    </button>
+                </aside>
+            </div>
         </Layout>
     );
 }

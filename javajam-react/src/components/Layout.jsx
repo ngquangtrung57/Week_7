@@ -1,16 +1,24 @@
+import {useEffect} from "react";
 import Header from "./Header";
 import Navigation from "./Navigation";
 import Footer from "./Footer";
 
-function Layout({activePage, children}){
+function Layout({title, children}){
+    useEffect(() => {
+        document.title = title ? `${title} | JavaJam Coffee House` : "JavaJam Coffee House";
+    }, [title]);
+
     return (
-        <div className="w-[80%] min-w-[800px] max-w-[960px] mx-auto my-5 border-[6px] border-dotted border-[#b8944f] overflow-hidden">
+        <div className="mx-auto my-0 max-w-5xl overflow-hidden bg-roast-100 shadow-lg sm:my-6 sm:rounded-xl sm:border-4 sm:border-dotted sm:border-roast-500">
             <Header />
 
-            <div className="overflow-hidden min-h-[350px] bg-[#ddc9a3]">
-                <Navigation activePage={activePage} />
+            <div className="md:grid md:grid-cols-[170px_1fr]">
+                <Navigation />
 
-                <main className="ml-[160px] bg-[#faf7ec] px-[25px] pt-[15px] pb-[25px] min-h-[350px]">
+                <main className="min-h-[420px] px-5 py-6 sm:px-8">
+                    {title && (
+                        <h2 className="mb-4 text-2xl font-bold text-roast-900">{title}</h2>
+                    )}
                     {children}
                 </main>
             </div>
