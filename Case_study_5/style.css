@@ -1,0 +1,270 @@
+@import url('https://fonts.googleapis.com/css2?family=Pirata+One&display=swap');
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", serif;
+    background: #ffffff;
+    color: #3a2a1a;
+}
+
+.page {
+    width: 80%;
+    min-width: 800px;
+    max-width: 960px;
+    margin: 20px auto;
+    border: 6px dotted #b8944f;
+    overflow: hidden;
+}
+
+.home-content {
+    display: table;
+    margin: 0 auto;
+}
+
+.home-content img {
+    display: table-cell;
+    width: 320px;
+    border: 1px solid #8a7860;
+    vertical-align: top;
+}
+
+.home-content > div {
+    display: table-cell;
+    padding-left: 25px;
+    vertical-align: top;
+}
+
+.home-content ul,
+.home-content address {
+    margin: 0 0 10px 0;
+}
+
+.cup-list {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.credit {
+    margin-top: 20px;
+    font-size: 0.75em;
+    color: #7a6a52;
+}
+.credit a {
+    color: #7a6a52;
+}
+
+header {
+    background: #c19a6b;
+    text-align: center;
+    padding: 10px 0;
+}
+
+header h1 {
+    margin: 0;
+    font-family: "Pirata One", "Brush Script MT", cursive;
+    font-size: 3.4em;
+    color: #2b1c10;
+}
+
+.content-wrapper {
+    overflow: hidden;
+    min-height: 350px;
+    background: #ddc9a3;
+}
+
+nav {
+    background: #ddc9a3;
+    width: 160px;
+    float: left;
+    padding: 20px 15px;
+}
+
+nav a {
+    display: block;
+    color: #8a7860;
+    text-decoration: none;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+nav a.active,
+nav a:hover {
+    color: #3a2a1a;
+}
+
+main {
+    margin-left: 160px;
+    background: #faf7ec;
+    padding: 15px 25px 25px;
+}
+
+main h2 {
+    margin-top: 0;
+}
+
+footer {
+    background: #c19a6b;
+    text-align: center;
+    padding: 8px 0;
+    font-size: 0.85em;
+    color: #2b1c10;
+}
+
+footer a {
+    color: #2b1c10;
+}
+
+/* Menu form */
+#menu-form {
+    width: 60%;
+    display: grid;
+}
+.menu-button {
+    justify-self: end;
+    padding: 3px 10px;
+    margin: 8px;
+    border: 1px solid #8a7860;
+    background: #f5ecd6;
+    cursor: pointer;
+    font-size: 0.85em;
+}
+
+.menu-button:hover {
+    background: #ddc9a3;
+}
+
+/* Menu table */
+table.menu-table {
+    margin: 10px auto 0;
+    border-collapse: separate;
+    border-spacing: 4px 0;
+}
+
+table.menu-table th,
+table.menu-table td {
+    padding: 12px;
+    vertical-align: middle;
+}
+
+table.menu-table th {
+    color: #2b1c10;
+    width: 150px;
+    text-align: center;
+}
+
+table.menu-table td {
+    text-align: left;
+}
+
+table.menu-table tr:nth-child(odd) th,
+table.menu-table tr:nth-child(odd) td {
+    background: #c19a6b;
+}
+
+table.menu-table tr:nth-child(even) th,
+table.menu-table tr:nth-child(even) td {
+    background: #f5ecd6;
+}
+
+input.quantity,
+input.subtotal {
+    width: 50px;
+}
+
+td#total_price {
+    text-align: right;
+}
+
+/* Music table */
+table.music-table {
+    width: 60%;
+    margin: 10px auto 0;
+    border-collapse: collapse;
+}
+
+table.music-table th {
+    background: #c19a6b;
+    text-align: left;
+    padding: 6px 10px;
+    border: 1px solid #b8944f;
+}
+
+table.music-table td {
+    border: 1px solid #b8944f;
+    padding: 10px;
+    vertical-align: top;
+}
+
+table.music-table td:first-child {
+    width: 110px;
+    text-align: center;
+}
+
+table.music-table img {
+    width: 90px;
+    height: 90px;
+    display: block;
+    margin: 0 auto;
+    object-fit: cover;
+    border: 1px solid #8a7860;
+}
+
+table.music-table audio {
+    margin-top: 6px;
+    width: 100%;
+    max-width: 260px;
+}
+
+/* Jobs form */
+#job-form .form-row {
+    margin-top: 10px;
+}
+
+#job-form label {
+    display: inline-block;
+    width: 110px;
+    font-weight: bold;
+    text-align: right;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+#job-form input[type="text"],
+#job-form input[type="email"],
+#job-form input[type="date"],
+#job-form textarea {
+    display: inline-block;
+    width: 220px;
+    padding: 5px;
+    border: 1px solid #b8944f;
+    font-family: inherit;
+    font-size: 0.9em;
+    vertical-align: middle;
+}
+
+#job-form textarea {
+    height: 60px;
+    resize: vertical;
+    vertical-align: top;
+}
+
+#job-form .buttons {
+    margin-top: 16px;
+}
+
+#job-form button {
+    padding: 3px 10px;
+    margin-right: 8px;
+    border: 1px solid #8a7860;
+    background: #f5ecd6;
+    cursor: pointer;
+    font-size: 0.85em;
+}
+
+#job-form button:hover {
+    background: #ddc9a3;
+}
